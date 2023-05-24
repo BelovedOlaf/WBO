@@ -3,21 +3,11 @@
 
 	var input = document.createElement("div");
 	input.id = "textToolInput";
-	
-	/*
-		This is my skype id: live:.cid.9ec5241ec68938a2
-		I want to work with you long-term.
-		I have read your message.
-		how about pay via freelacner.com only 50$?
-		and other bouns pay other platform?
-		becuase we should pay fee freelancer.com.
-		So it is good for both of us.
-		thanks, Andrew.
-		Can we discuss more here?
-	*/
-
 	input.style.visibility = "hidden";
 	input.style.overflowWrap = "unset";
+
+	input.style.whiteSpace = "nowrap";
+	// input.text = "This is my gmail. viacheslavdrobotia@gmail.com"
 	if (!input.parentNode) board.appendChild(input);
 
 	input.addEventListener("paste", function(e) {
@@ -26,21 +16,19 @@
 	
 		// get text representation of clipboard
 		var text = (e.originalEvent || e).clipboardData.getData('text/plain');
-	
-		console.log("paste", e);
-		console.log("paset text", text);
 
 		// insert text manually
-
 		
 		var list_array  = text.split("\n");
 		document.execCommand("insertText", false, list_array[0]);
+
 		for(var i = 1 ; i < list_array.length ; i ++) {
 			document.execCommand("insertLineBreak");
 			document.execCommand("insertText", false, list_array[i]);
 		}
-		document.changeHandler(NULL);
 	});
+
+	input.addEventListener("paste", changeHandler);
 
 	var curText = {
 		"type": 'new',
@@ -118,6 +106,7 @@
 		}
 
 		input.style.color = elem.style.color ? elem.style.color : "black";
+		placeCaretAtEnd(input);
 	}
 
 	function startEdit() {
@@ -138,14 +127,13 @@
 		input.style.minHeight = input.style.fontSize;
 		input.style.minWidth = "10px";
 		input.style.color = Tools.getColor();
-		console.log("Start Edit: Tools.current_color", Tools.current_color);
-		console.log("Start Edit: input.style.color", input.style.color);
 		input.style.padding = "0px 3px 0px 0px";
 		input.contentEditable = true;
 		input.style.transform = "scale(" + 1.0 + "," + 1.0 + ")";
 		input.focus();
 
 		input.addEventListener("keydown", changeHandler);
+		changeHandler();
 	}
 
 
@@ -183,16 +171,24 @@
 
 			Tools.drawAndSend(curText);
 		}, 30);
+
+		console.log("changeHandler Function called.");
 	}
 
 	function stopEdit() {
 		active = false;
 		const curTextEl = document.getElementById(curText.id);
 		if(curTextEl) curTextEl.style.visibility = "visible";
+		console.log("StopEdit Function Called:", curTextEl);
 		var text = curText.text;
 		text = text.replace("\n", "");
 		if(text.length === 0 && curTextEl) {
-			Tools.drawingArea.removeChild(curTextEl);
+			var msg = {
+				"type": "delete",
+				"id": ""
+			};
+			msg.id = curTextEl.id;
+			Tools.drawAndSend(msg);
 		}
 		isEdit = false;
 		curText.id = null;
@@ -226,6 +222,11 @@
 					color: ${data.color}; 
 					
 					font-size: ${data.fontSize}px;`);
+				break;
+			case "delete":
+				elem = document.getElementById(data.id);
+				if (elem === null) console.error("Eraser: Tried to delete an element that does not exist.");
+				else Tools.drawingArea.removeChild(elem);
 				break;
 			default:
 				console.error("Text: Draw instruction with unknown type. ", data);
@@ -269,5 +270,22 @@
 		"draw": draw,
 		"mouseCursor": "text",
 	});
+
+	function placeCaretAtEnd(el) {
+		if (typeof window.getSelection != "undefined"
+				&& typeof document.createRange != "undefined") {
+			var range = document.createRange();
+			range.selectNodeContents(el);
+			range.collapse(false);
+			var sel = window.getSelection();
+			sel.removeAllRanges();
+			sel.addRange(range);
+		} else if (typeof document.body.createTextRange != "undefined") {
+			var textRange = document.body.createTextRange();
+			textRange.moveToElementText(el);
+			textRange.collapse(false);
+			textRange.select();
+		}
+	}
 
 })();

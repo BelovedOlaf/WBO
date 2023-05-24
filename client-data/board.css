@@ -35,7 +35,6 @@ html, body, svg {
 	caret-color: black;
 	min-width: 100px;
 	padding: 20px;
-	resize: none;
 	border: 2px solid black;
 	position: absolute;
 }
