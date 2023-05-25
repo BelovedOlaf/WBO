@@ -270,7 +270,7 @@
 		"draw": draw,
 		"mouseCursor": "text",
 	});
-
+/*
 	function placeCaretAtEnd(el) {
 		if (typeof window.getSelection != "undefined"
 				&& typeof document.createRange != "undefined") {
@@ -287,5 +287,11 @@
 			textRange.select();
 		}
 	}
-
+	*/
+	function placeCaretAtEnd(element) {
+		if (element.getAttribute("contenteditable") === "true") {
+			window.getSelection().selectAllChildren(element)
+			window.getSelection().collapseToEnd()
+		}
+	}
 })();
