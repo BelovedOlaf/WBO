@@ -132,7 +132,8 @@
 		input.style.transform = "scale(" + 1.0 + "," + 1.0 + ")";
 		input.focus();
 
-		input.addEventListener("keydown", changeHandler);
+		// input.addEventListener("keydown", changeHandler);
+		input.addEventListener("keyup", changeHandler);
 		changeHandler();
 	}
 
@@ -149,6 +150,7 @@
 				return;
 			}
 		}
+
 		setTimeout(function () {
 			const curTextEl = document.getElementById(curText.id);
 			//elem.setAttribute("visibility", "visible");
@@ -172,14 +174,12 @@
 			Tools.drawAndSend(curText);
 		}, 30);
 
-		console.log("changeHandler Function called.");
 	}
 
 	function stopEdit() {
 		active = false;
 		const curTextEl = document.getElementById(curText.id);
 		if(curTextEl) curTextEl.style.visibility = "visible";
-		console.log("StopEdit Function Called:", curTextEl);
 		var text = curText.text;
 		text = text.replace("\n", "");
 		if(text.length === 0 && curTextEl) {
@@ -220,8 +220,10 @@
 				textField.setAttribute("style", `
 					font-family: ${data.fontName}; 
 					color: ${data.color}; 
-					
 					font-size: ${data.fontSize}px;`);
+				// console.log("Update Functin Called");
+				// console.log("document.getElementById(data.id)", document.getElementById(data.id));
+				// console.log("textField", textField);
 				break;
 			case "delete":
 				elem = document.getElementById(data.id);
@@ -247,15 +249,15 @@
 		elem.id = fieldData.id;
 		textEl.setAttribute("style", `
 		font-family: ${fieldData.fontName}; 
-		color: ${fieldData.color}; 
-		
+		color: ${fieldData.color};
 		font-size: ${fieldData.fontSize}px;`);
+		textEl.innerText = "abc";
 		if (fieldData.text) updateText(textEl, fieldData.text, elem);
 		elem.appendChild(textEl);
 		elem.setAttribute('height', fieldData.parentHeight || 0);
 		elem.setAttribute('width', fieldData.parentWidth || 0);
 		Tools.drawingArea.appendChild(elem);
-		
+
 		return elem;
 	}
 
